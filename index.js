@@ -26,25 +26,30 @@ mongoose
       duration: 10,
       creator: "grandma",
     }
-    Recipe.create(recipe)
-      .then((recipe)=> console.log("Recipe has been created", recipe.title))
-      
-    Recipe.insertMany(recipesJson)
-      .then((recipedata)=>{
-        recipedata.forEach((e)=>{
-          console.log(e.title)
-        })
-        Recipe.findOneAndUpdate({title:"Rigatoni alla Genovese"}, { duration : 100}, { new: true})
-        .then((recipe)=>{
-          console.log("You updated the duration to ", recipe.duration)
-        })
-        Recipe.deleteOne({title: "Carrot Cake"})
-        .then((deletedRecipe)=>{
-          console.log("The recipe was deleted!")
-        })
-      })
-      .catch((error)=> console.log(error))
-      
+    return Recipe.create(recipe)
+  })
+  .then((recipe)=>{
+    console.log("Recipe has been created", recipe.title)
+    return Recipe.insertMany(recipesJson);
+  })
+  .then((recipedata)=>{
+    recipedata.forEach((e)=>{
+      console.log(e.title)
+    })
+  })
+  .then(()=>{
+    return Recipe.findOneAndUpdate({title:"Rigatoni alla Genovese"}, { duration : 100}, { new: true})
+  })
+  .then((recipe)=>{
+      console.log("You updated the duration to ", recipe.duration)
+      return Recipe.deleteOne({title: "Carrot Cake"})
+  })
+  .then(()=>{
+    console.log("The recipe was deleted!")
+    return mongoose.disconnect();
+  })
+  .then(()=>{
+    console.log("Data base connection closed")
   })
   .catch(error => {
     console.error('Error connecting to the database', error);
